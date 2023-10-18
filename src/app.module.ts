@@ -8,10 +8,11 @@ import { ProductModule } from './product/product.module';
 import { ProfileModule } from './profile/profile.module';
 import { CartModule } from './cart/cart.module';
 import { CategoryModule } from './category/category.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, AuthModule, ProductModule, ProfileModule, CartModule, CategoryModule],
+  imports: [PrismaModule, UserModule, AuthModule, ProductModule, ProfileModule, CartModule, CategoryModule, AdminModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
