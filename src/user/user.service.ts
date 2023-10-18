@@ -7,7 +7,28 @@ import * as bcrypt from 'bcrypt'
 export class UserService {
     constructor(private readonly prisma: PrismaService) { }
 
+    async get(userId: string) {
+        return await this.prisma.user.findUnique({
+            where: { id: userId }
+        })
+    }
+
+    async changePhoneNumber(userId: string, phoneNumber: string) {
+        return await this.prisma.user.update({
+            where: { id: userId },
+            data: { phoneNumber }
+        })
+    }
+
     async changeEmail(userId: string, email: string) {
+        const existingEmail = await this.prisma.user.findUnique({
+            where: { email }
+        })
+
+        if (existingEmail) {
+            throw new BadRequestException('email already in use')
+        }
+
         return await this.prisma.user.update({
             where: { id: userId },
             data: { email }
