@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @default(uuid())
+  username String   @unique
+  email    String   @unique
+  password String
+  profile  Profile?
+  cart     Cart?
+  orders   Order[]
+  Review   Review[]
+
+  @@map(name: "user")
+}
+
+model Profile {
+  id        String @id @default(uuid())
+  firstName String @map(name: "first_name")
+  lastName  String @map(name: "last_name")
+  userId    String @unique @map(name: "user_id")
+  user      User   @relation(fields: [userId], references: [id])
+
+  @@map(name: "profile")
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  imageUrl    String      @map(name: "image_url")
+  stock       Int
+  reviews     Review[]
+  categories  Category[]
+  CartItem    CartItem[]
+  OrderItem   OrderItem[]
+
+  @@map(name: "product")
+}
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String
+  products Product[]
+
+  @@map(name: "category")
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique @map(name: "user_id")
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  createdAt DateTime   @default(now()) @map(name: "created_at")
+  updatedAt DateTime   @updatedAt @map(name: "updated_at")
+
+  @@map(name: "cart")
+}
+
+model CartItem {
+  id        String  @id @default(uuid())
+  quantity  Int
+  productId String  @map(name: "product_id")
+  product   Product @relation(fields: [productId], references: [id])
+  cartId    String  @map(name: "cart_id")
+  cart      Cart    @relation(fields: [cartId], references: [id])
+
+  @@map(name: "cart_item")
+}
+
+model Review {
+  id        String  @id @default(uuid())
+  text      String
+  rating    Float
+  productId String  @map(name: "product_id")
+  product   Product @relation(fields: [productId], references: [id])
+  userId    String  @map(name: "user_id")
+  user      User    @relation(fields: [userId], references: [id])
+
+  @@map(name: "review")
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  userId    String      @map(name: "user_id")
+  user      User        @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+  createdAt DateTime    @default(now()) @map(name: "created_at")
+  updatedAt DateTime    @updatedAt @map(name: "updated_at")
+
+  @@map(name: "order")
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  quantity  Int
+  productId String  @map(name: "product_id")
+  product   Product @relation(fields: [productId], references: [id])
+  orderId   String  @map(name: "order_id")
+  order     Order   @relation(fields: [orderId], references: [id])
+
+  @@map(name: "order_item")
+}
