@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+# main.ts
+/src/main.ts
+
 # Logs
 logs
 *.log
