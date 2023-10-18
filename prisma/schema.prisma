@@ -28,7 +28,7 @@ model Profile {
   id        String    @id @default(uuid())
   name      String
   gender    String?
-  birthDate DateTime?
+  birthDate DateTime? @db.Date
   userId    String    @unique @map(name: "user_id")
   user      User      @relation(fields: [userId], references: [id])
 
