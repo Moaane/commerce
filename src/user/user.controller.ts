@@ -9,7 +9,7 @@ export class UserController {
   @Get()
   async get(@Req() req) {
     const userId = req.user.sub
-    return await this.userService.get(userId)
+    return await this.userService.findOneUser(userId)
   }
 
   @Patch('update-email')
@@ -29,4 +29,5 @@ export class UserController {
     const userId = req.user.sub
     return await this.userService.changePassword(userId, dto)
   }
+
 }

@@ -7,7 +7,8 @@ import * as bcrypt from 'bcrypt'
 export class UserService {
     constructor(private readonly prisma: PrismaService) { }
 
-    async get(userId: string) {
+    /// USER
+    async findOneUser(userId: string) {
         return await this.prisma.user.findUnique({
             where: { id: userId }
         })
@@ -55,6 +56,13 @@ export class UserService {
         return await this.prisma.user.update({
             where: { id: user.id },
             data: { password: newPassword }
+        })
+    }
+
+    ///ADMIN
+    async delete(userId: string) {
+        return await this.prisma.user.delete({
+            where: { id: userId }
         })
     }
 }
