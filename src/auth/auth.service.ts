@@ -40,13 +40,7 @@ export class AuthService {
             }
         })
 
-        const cart = await this.prisma.cart.create({
-            data: {
-                userId: user.id
-            }
-        })
-
-        return { user: user, profile: profile, cart: cart }
+        return user
 
     }
 

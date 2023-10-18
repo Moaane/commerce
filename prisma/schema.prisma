@@ -48,6 +48,7 @@ model Product {
   price       Float
   imageUrl    String      @map(name: "image_url")
   stock       Int
+  isActive    Boolean
   reviews     Review[]
   categories  Category[]
   CartItem    CartItem[]
