@@ -1,9 +1,13 @@
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('USER', 'SELLER', 'ADMIN');
+
 -- CreateTable
 CREATE TABLE "user" (
     "id" TEXT NOT NULL,
-    "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "phoneNumber" TEXT,
     "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'USER',
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
@@ -11,8 +15,9 @@ CREATE TABLE "user" (
 -- CreateTable
 CREATE TABLE "profile" (
     "id" TEXT NOT NULL,
-    "first_name" TEXT NOT NULL,
-    "last_name" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "gender" TEXT,
+    "birthDate" TIMESTAMP(3),
     "user_id" TEXT NOT NULL,
 
     CONSTRAINT "profile_pkey" PRIMARY KEY ("id")
@@ -96,10 +101,10 @@ CREATE TABLE "_CategoryToProduct" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_username_key" ON "user"("username");
+CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
+CREATE UNIQUE INDEX "user_phoneNumber_key" ON "user"("phoneNumber");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "profile_user_id_key" ON "profile"("user_id");

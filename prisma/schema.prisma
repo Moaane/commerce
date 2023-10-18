@@ -11,26 +11,34 @@ datasource db {
 }
 
 model User {
-  id       String   @id @default(uuid())
-  username String   @unique
-  email    String   @unique
-  password String
-  profile  Profile?
-  cart     Cart?
-  orders   Order[]
-  Review   Review[]
+  id          String   @id @default(uuid())
+  email       String   @unique
+  phoneNumber String?  @unique
+  password    String
+  profile     Profile?
+  cart        Cart?
+  orders      Order[]
+  Review      Review[]
+  role        Role     @default(USER)
 
   @@map(name: "user")
 }
 
 model Profile {
-  id        String @id @default(uuid())
-  firstName String @map(name: "first_name")
-  lastName  String @map(name: "last_name")
-  userId    String @unique @map(name: "user_id")
-  user      User   @relation(fields: [userId], references: [id])
+  id        String    @id @default(uuid())
+  name      String
+  gender    String?
+  birthDate DateTime?
+  userId    String    @unique @map(name: "user_id")
+  user      User      @relation(fields: [userId], references: [id])
 
   @@map(name: "profile")
+}
+
+enum Role {
+  USER
+  SELLER
+  ADMIN
 }
 
 model Product {
