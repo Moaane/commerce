@@ -18,10 +18,6 @@ export class CartService {
             where: { cartId: existingCart.id }
         })
 
-        if (!cartItem) {
-            return existingCart
-        }
-
         return cartItem
     }
 
