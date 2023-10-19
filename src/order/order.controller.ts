@@ -1,11 +1,13 @@
-import { Controller, Post, Body, Req } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
 import { OrderService } from './order.service';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
-@Controller('orders')
+@Controller('order')
 export class OrderController {
     constructor(private readonly orderService: OrderService) {}
 
-    @Post()
+    @UseGuards(AuthGuard)
+    @Post('')
     async createOrder(
         @Req() req,
         @Body() data: { cartItemIds: string[], productId: string }

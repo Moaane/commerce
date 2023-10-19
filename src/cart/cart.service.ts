@@ -40,6 +40,17 @@ export class CartService {
             })
         }
 
+        const existingCartItem = await this.prisma.cartItem.findFirst({
+            where: {productId}
+        })
+
+        if (existingCartItem) {
+            return await this.prisma.cartItem.update({
+         where: {id: existingCartItem.id},
+                data: {quantity: {increment: 1}}
+            })
+        }
+
         return await this.prisma.cartItem.create({
             data: {
                 cartId: existingCart.id,
@@ -63,26 +74,40 @@ export class CartService {
         })
     }
 
+    // async deleteCartItem(userId: string, cartItemId: string) {
+    //     await this.prisma.cartItem.delete({
+    //         where: { id: cartItemId }
+    //     })
+
+    //     const cart = await this.prisma.cart.findUnique({
+    //         where: { userId }
+    //     })
+
+    //     const itemCount = await this.prisma.cartItem.count({
+    //         where: { cartId: cart.id }
+    //     });
+
+    //     if (itemCount === 0) {
+    //         return await this.prisma.cart.delete({
+    //             where: { userId }
+    //         })
+    //     }
+
+    //     return { status: 204, message: 'Cart item successfully deleted' }
+    // }
+
     async deleteCartItem(userId: string, cartItemId: string) {
-        await this.prisma.cartItem.delete({
-            where: { id: cartItemId }
-        })
-
-        const cart = await this.prisma.cart.findUnique({
-            where: { userId }
-        })
-
-        const itemCount = await this.prisma.cartItem.count({
-            where: { cartId: cart.id }
+        const existingCartItem = await this.prisma.cartItem.findUnique({
+            where: { id: cartItemId },
         });
-
-        if (itemCount === 0) {
-            return await this.prisma.cart.delete({
-                where: { userId }
-            })
+    
+        if (!existingCartItem) {
+            return { status: 404, message: "Cart item not found" };
         }
-
-        return { status: 204, message: 'Cart item successfully deleted' }
+    
+        await this.prisma.cartItem.delete({ where: { id: cartItemId } });
+        return { status: 200, message: "Cart item deleted" };
     }
+    
 
 }

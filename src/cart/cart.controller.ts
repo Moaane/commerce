@@ -1,5 +1,6 @@
-import { Controller, Param, Req } from '@nestjs/common';
+import { Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { CartService } from './cart.service';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @Controller('cart')
 export class CartController {
@@ -10,6 +11,8 @@ export class CartController {
     return await this.cartService.findAll(userId)
   }
 
+  @UseGuards(AuthGuard)
+  @Post('create/:id')
   async create(@Req() req, @Param('id') productId: string) {
     const userId = req.user.sub
     return await this.cartService.create(userId, productId)
