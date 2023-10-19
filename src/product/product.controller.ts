@@ -11,9 +11,10 @@ export class ProductController {
     return await this.productService.findAll()
   }
 
-  @Get('category/:id')
-  async findProductsByCategories(@Param('id') categoryId: string) {
-    return this.productService.findProductsByCategories(categoryId);
+  @Get('category/:categoryIds')
+  async findProductsByCategories(@Param('categoryIds') categoryIds: string) {
+    const categoryIdArray = categoryIds.split(','); // Membagi path parameter menjadi array
+    return this.productService.findProductsByCategories(categoryIdArray);
   }
 
   @Get('find/:id')
@@ -28,7 +29,6 @@ export class ProductController {
       categories: dto.categories,
     });
   }
-
 
   @Patch('update/:id')
   async update(@Param('id') productId: string, @Body() dto: ProductDto, categoryIds: string[]) {

@@ -15,19 +15,29 @@ export class ProductService {
         })
     }
 
-    async findProductsByCategories(categoryId) {
-        return await this.prisma.category.findMany({
-            select: {
-                products: {
-                    include: {
-                        categories: {
-                            select: { name: true }
-                        }
-                    }
-                }
+    async findProductsByCategories(categoryIds: string[]) {
+        const productsInCategories = await this.prisma.product.findMany({
+          where: {
+            categories: {
+              some: {
+                OR: categoryIds.map((categoryId) => ({
+                  id: categoryId,
+                })),
+              },
             },
+          },
+          include: {
+            categories: {
+              select: { name: true }
+            }
+          }
         });
-    }
+    
+        const uniqueProducts = [...new Map(productsInCategories.map((product) => [product.id, product])).values()];
+    
+        return uniqueProducts;
+      }
+
 
     async findOne(productId: string) {
         return await this.prisma.product.findUnique({
