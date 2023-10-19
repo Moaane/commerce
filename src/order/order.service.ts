@@ -6,7 +6,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class OrderService {
     constructor(
         private readonly prisma: PrismaService,
-        private readonly cartService: CartService,
     ) {}
 
     async createOrder(userId: string, cartItemIds: string[]) {
@@ -43,9 +42,9 @@ export class OrderService {
             data: orderItemData,
         });
 
-        for (const cartItemId of cartItemIds) {
-            await this.cartService.deleteCartItem(userId, cartItemId);
-        }
+        // for (const cartItemId of cartItemIds) {
+        //     await this.cartService.deleteCartItem(userId, cartItemId);
+        // }
 
         return orderItems;
     }
