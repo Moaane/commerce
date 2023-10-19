@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class OrderService {
     constructor(
         private readonly prisma: PrismaService,
+        private readonly cartService : CartService
     ) {}
 
     async createOrder(userId: string, cartItemIds: string[]) {
@@ -35,17 +36,19 @@ export class OrderService {
                     quantity: cartItem.quantity,
                 };
                 orderItemData.push(orderItem);
+
+                const updatedQuantity = cartItem.quantity - 1;
+                if (updatedQuantity < 1) {
+              
+                    await this.cartService.deleteCartItem(userId, cartItemId);
+                } else {
+              
+                    await this.cartService.updateCartItemQuantity(cartItemId, updatedQuantity);
+                }
             }
         }
 
-        const orderItems = await this.prisma.orderItem.createMany({
-            data: orderItemData,
-        });
+        return getCart
 
-        // for (const cartItemId of cartItemIds) {
-        //     await this.cartService.deleteCartItem(userId, cartItemId);
-        // }
-
-        return orderItems;
     }
 }

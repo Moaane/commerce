@@ -67,6 +67,13 @@ export class CartService {
         })
     }
 
+    async updateCartItemQuantity(cartItemId: string, newQuantity: number) {
+        await this.prisma.cartItem.update({
+            where: { id: cartItemId },
+            data: { quantity: newQuantity },
+        });
+    }
+
     async decreaseQuantityCartItem(cartItemId: string) {
         return await this.prisma.cartItem.update({
             where: { id: cartItemId },
@@ -96,17 +103,28 @@ export class CartService {
     //     return { status: 204, message: 'Cart item successfully deleted' }
     // }
 
+    // async deleteCartItem(userId: string, cartItemId: string) {
+    //     const existingCartItem = await this.prisma.cartItem.findUnique({
+    //         where: { id: cartItemId },
+    //     });
+    
+    //     if (!existingCartItem) {
+    //         return { status: 404, message: "Cart item not found" };
+    //     }
+    
+    //     await this.prisma.cartItem.delete({ where: { id: cartItemId } });
+    //     return { status: 200, message: "Cart item deleted" };
+    // }
     async deleteCartItem(userId: string, cartItemId: string) {
-        const existingCartItem = await this.prisma.cartItem.findUnique({
-            where: { id: cartItemId },
+        const existingCart = await this.prisma.cart.findUnique({
+            where: { userId }
         });
     
-        if (!existingCartItem) {
-            return { status: 404, message: "Cart item not found" };
+        if (existingCart) {
+            await this.prisma.cartItem.delete({
+                where: { id: cartItemId }
+            });
         }
-    
-        await this.prisma.cartItem.delete({ where: { id: cartItemId } });
-        return { status: 200, message: "Cart item deleted" };
     }
     
 
