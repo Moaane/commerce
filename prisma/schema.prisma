@@ -45,10 +45,10 @@ model Product {
   id          String      @id @default(uuid())
   name        String
   description String
-  price       Float
+  price       Int
   imageUrl    String      @map(name: "image_url")
   stock       Int
-  isActive    Boolean
+  isActive    Boolean @default(true)
   reviews     Review[]
   categories  Category[]
   CartItem    CartItem[]

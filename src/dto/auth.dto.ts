@@ -4,7 +4,6 @@ import { UserEntity } from "src/entities/user.entity";
 export class RegisterDto {
     email: string;
     password: string;
-    PhoneNumber: string
     name: string
 }
 

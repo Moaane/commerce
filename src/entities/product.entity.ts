@@ -7,4 +7,5 @@ export class ProductEntity implements Product {
     imageUrl: string;
     price: number;
     stock: number;
+    isActive: boolean;
 }
