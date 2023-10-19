@@ -12,7 +12,7 @@ import { AdminModule } from './admin/admin.module';
 import { OrderModule } from './order/order.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, AuthModule, ProductModule, ProfileModule, CartModule, CategoryModule, AdminModule,OrderModule],
+  imports: [PrismaModule, UserModule, AuthModule, ProductModule, ProfileModule, CartModule, CategoryModule, AdminModule],
   controllers: [AppController],
   providers: [AppService],
 })
