@@ -7,4 +7,10 @@ export class ProductDto extends OmitType(ProductEntity, ['id']) {
     imageUrl: string;
     price: number;
     stock: number;
+    categories: string[]
 }
+// category-search.dto.ts
+export class CategorySearchDto {
+    categoryIds: string[]; // Ini akan menjadi daftar ID kategori yang ingin Anda cari
+  }
+  

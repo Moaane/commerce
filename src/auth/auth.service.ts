@@ -26,9 +26,11 @@ export class AuthService {
 
         const hashedPassword = await bcrypt.hash(dto.password, 10)
 
+        console.log(dto)
+
         const user = await this.prisma.user.create({
             data: {
-                ...dto,
+                email: dto.email,
                 password: hashedPassword
             }
         })
@@ -40,7 +42,7 @@ export class AuthService {
             }
         })
 
-        return user
+        return { user: user, profile: profile }
 
     }
 
@@ -59,7 +61,7 @@ export class AuthService {
             throw new UnauthorizedException('password wrong')
         }
 
-        const payload = { sub: user.id, username: user.email, role: user.role }
+        const payload = { sub: user.id, email: user.email, role: user.role }
 
         return {
             access_token: await this.jwt.signAsync(payload)
