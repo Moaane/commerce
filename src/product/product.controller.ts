@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CategorySearchDto, ProductDto } from 'src/dto/product.dto';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) { }
@@ -31,8 +33,17 @@ export class ProductController {
   }
 
   @Patch('update/:id')
-  async update(@Param('id') productId: string, @Body() dto: ProductDto, categoryIds: string[]) {
-    return this.productService.update(productId, dto, categoryIds)
+  async update(
+    @Param('id') productId: string,
+    @Body() dto: ProductDto,
+  ) {
+    const { categories } = dto; // Extract categories from the DTO
+
+    if (!Array.isArray(categories)) {
+      throw new BadRequestException('Invalid category IDs');
+    }
+
+    return this.productService.update(productId, dto, categories);
   }
 
   @Delete('delete/:id')

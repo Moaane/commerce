@@ -1,4 +1,4 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -18,10 +18,18 @@ export class CartService {
             where: { cartId: existingCart.id }
         })
 
-        return cartItem
+        return { item: cartItem }
     }
 
     async create(userId: string, productId: string) {
+        const product = await this.prisma.product.findUnique({
+            where: { id: productId }
+        })
+
+        if (!product) {
+            throw new NotFoundException
+        }
+
         const existingCart = await this.prisma.cart.findUnique({
             where: { userId }
         })
@@ -41,13 +49,13 @@ export class CartService {
         }
 
         const existingCartItem = await this.prisma.cartItem.findFirst({
-            where: {productId}
+            where: { productId }
         })
 
         if (existingCartItem) {
             return await this.prisma.cartItem.update({
-         where: {id: existingCartItem.id},
-                data: {quantity: {increment: 1}}
+                where: { id: existingCartItem.id },
+                data: { quantity: { increment: 1 } }
             })
         }
 
@@ -107,11 +115,11 @@ export class CartService {
     //     const existingCartItem = await this.prisma.cartItem.findUnique({
     //         where: { id: cartItemId },
     //     });
-    
+
     //     if (!existingCartItem) {
     //         return { status: 404, message: "Cart item not found" };
     //     }
-    
+
     //     await this.prisma.cartItem.delete({ where: { id: cartItemId } });
     //     return { status: 200, message: "Cart item deleted" };
     // }
@@ -119,13 +127,13 @@ export class CartService {
         const existingCart = await this.prisma.cart.findUnique({
             where: { userId }
         });
-    
+
         if (existingCart) {
             await this.prisma.cartItem.delete({
                 where: { id: cartItemId }
             });
         }
     }
-    
+
 
 }

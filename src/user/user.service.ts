@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ChangePasswordDto } from 'src/dto/user.dto';
+import { ChangeEmailDto, ChangePasswordDto, ChangePhoneNumberDto } from 'src/dto/user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt'
 
@@ -14,16 +14,44 @@ export class UserService {
         })
     }
 
-    async changePhoneNumber(userId: string, phoneNumber: string) {
+    async changePhoneNumber(userId: string, dto: ChangePhoneNumberDto) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId }
+        })
+
+        const password = await bcrypt.compare(dto.password, user.password)
+
+        if (!password) {
+            throw new BadRequestException('password wrong')
+        }
+
+        const existingPhoneNumber = await this.prisma.user.findUnique({
+            where: { phoneNumber: dto.phoneNumber }
+        })
+
+        if (existingPhoneNumber) {
+            throw new BadRequestException('phone number already been use')
+        }
+
         return await this.prisma.user.update({
             where: { id: userId },
-            data: { phoneNumber }
+            data: { phoneNumber: dto.phoneNumber }
         })
     }
 
-    async changeEmail(userId: string, email: string) {
+    async changeEmail(userId: string, dto: ChangeEmailDto) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId }
+        })
+
+        const password = await bcrypt.compare(dto.password, user.password)
+
+        if (!password) {
+            throw new BadRequestException('password wrong')
+        }
+
         const existingEmail = await this.prisma.user.findUnique({
-            where: { email }
+            where: { email: dto.email }
         })
 
         if (existingEmail) {
@@ -32,7 +60,7 @@ export class UserService {
 
         return await this.prisma.user.update({
             where: { id: userId },
-            data: { email }
+            data: { email: dto.email }
         })
     }
 

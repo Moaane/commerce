@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CategorySearchDto, ProductDto } from 'src/dto/product.dto';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { ProductDto } from 'src/dto/product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -9,7 +9,11 @@ export class ProductService {
     async findAll() {
         return await this.prisma.product.findMany({
             include: {
-                categories: true
+                categories: {
+                    select: {
+                        name: true
+                    }
+                }
             }
 
         })
@@ -17,26 +21,26 @@ export class ProductService {
 
     async findProductsByCategories(categoryIds: string[]) {
         const productsInCategories = await this.prisma.product.findMany({
-          where: {
-            categories: {
-              some: {
-                OR: categoryIds.map((categoryId) => ({
-                  id: categoryId,
-                })),
-              },
+            where: {
+                categories: {
+                    some: {
+                        OR: categoryIds.map((categoryId) => ({
+                            id: categoryId,
+                        })),
+                    },
+                },
             },
-          },
-          include: {
-            categories: {
-              select: { name: true }
+            include: {
+                categories: {
+                    select: { name: true }
+                }
             }
-          }
         });
-    
+
         const uniqueProducts = [...new Map(productsInCategories.map((product) => [product.id, product])).values()];
-    
+
         return uniqueProducts;
-      }
+    }
 
 
     async findOne(productId: string) {
@@ -70,9 +74,18 @@ export class ProductService {
                 });
             }
 
-            return product;
+            return await this.prisma.product.findUnique({
+                where: { id: product.id },
+                include: {
+                    categories: {
+                        select: {
+                            name: true
+                        }
+                    }
+                }
+            });
         } else {
-            throw new Error('Categories must be defined and an array.');
+            throw new BadRequestException('product must have category')
         }
     }
 
@@ -83,19 +96,33 @@ export class ProductService {
         })
 
         if (!existingProduct) {
-            throw new NotFoundException('product not found')
+            throw new NotFoundException('Product not found');
         }
 
-        return await this.prisma.product.update({
-            where: { id: productId },
-            data: {
-                ...dto,
-                categories: {
-                    set: categoryIds.map((categoryId) => ({ id: categoryId }))
+        // Check if categoryIds is defined and is an array before mapping
+        if (categoryIds && Array.isArray(categoryIds)) {
+            return await this.prisma.product.update({
+                where: { id: productId },
+                data: {
+                    ...dto,
+                    categories: {
+                        set: categoryIds.map((categoryId) => ({ id: categoryId }))
+                    }
+                },
+                include: {
+                    categories: {
+                        select: {
+                            name: true
+                        }
+                    }
                 }
-            }
-        })
+            });
+        } else {
+            // Handle the case where categoryIds is undefined or not an array
+            throw new BadRequestException('Invalid category IDs');
+        }
     }
+
 
     async delete(productId: string) {
         return await this.prisma.product.delete({

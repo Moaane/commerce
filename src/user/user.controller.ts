@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Patch, Req } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ChangePasswordDto } from 'src/dto/user.dto';
+import { ChangeEmailDto, ChangePasswordDto, ChangePhoneNumberDto } from 'src/dto/user.dto';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) { }
@@ -12,16 +14,16 @@ export class UserController {
     return await this.userService.findOneUser(userId)
   }
 
-  @Patch('update-email')
-  async changePhoneNumber(@Req() req, @Body() phoneNumber: string) {
+  @Patch('update-phone-number')
+  async changePhoneNumber(@Req() req, @Body() dto: ChangePhoneNumberDto) {
     const userId = req.user.sub
-    return await this.userService.changeEmail(userId, phoneNumber)
+    return await this.userService.changeEmail(userId, dto)
   }
 
   @Patch('update-email')
-  async changeEmail(@Req() req, @Body() email: string) {
+  async changeEmail(@Req() req, @Body() dto: ChangeEmailDto) {
     const userId = req.user.sub
-    return await this.userService.changeEmail(userId, email)
+    return await this.userService.changeEmail(userId, dto)
   }
 
   @Patch('update-password')

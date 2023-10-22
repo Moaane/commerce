@@ -48,7 +48,7 @@ model Product {
   price       Int
   imageUrl    String      @map(name: "image_url")
   stock       Int
-  isActive    Boolean @default(true)
+  isActive    Boolean     @default(true)
   reviews     Review[]
   categories  Category[]
   CartItem    CartItem[]
@@ -100,12 +100,13 @@ model Review {
 }
 
 model Order {
-  id        String      @id @default(uuid())
-  userId    String      @map(name: "user_id")
-  user      User        @relation(fields: [userId], references: [id])
-  items     OrderItem[]
-  createdAt DateTime    @default(now()) @map(name: "created_at")
-  updatedAt DateTime    @updatedAt @map(name: "updated_at")
+  id         String      @id @default(uuid())
+  userId     String      @map(name: "user_id")
+  user       User        @relation(fields: [userId], references: [id])
+  items      OrderItem[]
+  totalPrice Int
+  createdAt  DateTime    @default(now()) @map(name: "created_at")
+  updatedAt  DateTime?    @updatedAt @map(name: "updated_at")
 
   @@map(name: "order")
 }
@@ -115,8 +116,8 @@ model OrderItem {
   quantity  Int
   productId String  @map(name: "product_id")
   product   Product @relation(fields: [productId], references: [id])
-  orderId   String  @map(name: "order_id")
-  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String? @map(name: "order_id")
+  order     Order?  @relation(fields: [orderId], references: [id])
 
   @@map(name: "order_item")
 }
