@@ -7,7 +7,7 @@ export class ChangePasswordDto extends OmitType(UserEntity, ['id']) {
 }
 
 export class ChangeEmailDto extends OmitType(UserEntity, ['id']) {
-    Password: string;
+    password: string;
     email: string;
 }
 
